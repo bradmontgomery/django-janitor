@@ -23,5 +23,5 @@ ContentType, and the contents of the supplied ``field_name`` are run through ble
 Here's a Screenshot: |screenshot|
 
 .. _bleach: https://github.com/jsocol/bleach
-.. |screenshot| image:: screenshot.png
+.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/0f97e4427c21/screenshot.png
 
