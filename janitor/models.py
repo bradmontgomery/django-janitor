@@ -4,6 +4,8 @@ from django.db.models.signals import pre_save
 
 from bleach import Bleach
 
+default_tags = ['html', 'body', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'img', 'a', ]
+
 def _register(callback, content_type_list):
     for ct in content_type_list:
         pre_save.connect(callback, sender=ct.model_class(), dispatch_uid=ct.model)
@@ -56,8 +58,8 @@ def sanitize_fields(sender, **kwargs):
             if 'tags' in kwargs:
                 field_content = bl.clean(field_content, tags=kwargs['tags'])
             else:
-                field_content = bl.clean(field_content)
-            setattr(sender_instance, sanitizer.field_name, new_content)
+                field_content = bl.clean(field_content, tags=default_tags)
+            setattr(sender_instance, sanitizer.field_name, field_content)
 
 # Register everything
 _content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
