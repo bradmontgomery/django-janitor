@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save
+from django.db.utils import DatabaseError
 
 from bleach import Bleach
 
@@ -70,7 +71,10 @@ def sanitize_fields(sender, **kwargs):
                 field_content = bl.clean(field_content, tags=tags)
             setattr(sender_instance, sanitizer.field_name, field_content)
 
-# Register everything #TODO: can't run syncdb with this here, since the DB tables don't exist yet.
-_content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
-_content_types = [ct for ct in ContentType.objects.filter(id__in=_content_type_ids)]
-_register(sanitize_fields, _content_types)
+try:
+    # Register everything 
+    _content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
+    _content_types = [ct for ct in ContentType.objects.filter(id__in=_content_type_ids)]
+    _register(sanitize_fields, _content_types)
+except DatabaseError:
+    pass # FieldSanittizer's tables don't exist yet.
