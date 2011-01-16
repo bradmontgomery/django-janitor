@@ -8,20 +8,21 @@ django-janitor may be useful for you.
 Installation
 ------------
 
-**This software is not yet ready for production use**! However, if you want to 
-test it out, just put the contents of the janitor directory in a Django project,
-and add ``janitor`` to ``INSTALLED_APPS``, then run ``manage.py syncdb``
+**This software is a work in progress, and is NOT ready for production usei!** i
+However, if you want to try it out, just put the contents of the janitor directory 
+in a Django project, and add ``janitor`` to ``INSTALLED_APPS``, then run ``manage.py syncdb``
 
 Usage
 -----
 
-Once installed, you would then use Django's Admin to create a FieldSanitizer, 
-which consists of a ContentType and a field name.  At that point, django-janitor
-listens for the pre_save signal for the Model that corresponds to the selected
-ContentType, and the contents of the supplied ``field_name`` are run through bleach.
+Once installed, you would then use Django's Admin to create a ``FieldSanitizer`` for 
+all app Models with fields that contain HTML content.  The ``FieldSanitizer`` consists 
+of a ``ContentType`` and a field name.  Once the ``FieldSanitizer`` is created, 
+django-janitor listens for the pre_save signal for the Model that corresponds to the 
+selected ContentType, and the contents of the supplied field name are cleaned with bleach.
 
 Here's a Screenshot: |screenshot|
 
 .. _bleach: https://github.com/jsocol/bleach
-.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/0f97e4427c21/screenshot.png
+.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/ab1b6a62be94/screenshot.png
 
