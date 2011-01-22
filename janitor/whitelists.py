@@ -3,12 +3,8 @@ This module contains various lists of HTML tags that
 can be used as a  whitelist for Bleach.
 
 """
-document_tags = ['body', 'DOCTYPE', 'head', 'html', 'link', 'meta', 'style', 'title',]
 structure_tags = ['div', 'span', ]
-
 basic_content_tags = ['a','abbr', 'acronym', 'blockquote', 'cite', 'code', 'dd', 'del', 'dfn', 'dl', 'dt', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'img', 'ins', 'kbd', 'li', 'ol', 'p', 'pre', 'q', 'samp', 'strong', 'ul', ]
-basic_document_tags = basic_content_tags + document_tags
-
 table_tags = ['caption','col', 'colgroup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', ]
 form_tags = ['button', 'fieldset', 'form', 'input', 'label', 'legend', 'optgroup', 'option', 'select', 'textarea', ]
 script_tags = ['script', 'noscript', ]
