@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.db.utils import DatabaseError
 
-from bleach import Bleach
+from bleach import clean 
 from janitor import whitelists
 
 def _register(callback, content_type_list):
@@ -52,7 +52,7 @@ class FieldSanitizer(models.Model):
         return [s.strip() for s in self.styles.split(',') if len(s.strip()) > 0]
 
     def get_bleach_clean_args(self):
-        """ Return a dict appropriate for passing into ``Bleach.clean`` """
+        """ Return a dict appropriate for passing into ``bleach.clean`` """
         return {'tags': self.get_tags_list(),
                 'attributes':self.get_attributes_list(),
                 'styles':self.get_styles_list(),
@@ -70,12 +70,11 @@ def sanitize_fields(sender, **kwargs):
     sender_content_type = ContentType.objects.get_for_model(sender)
     sender_instance = kwargs['instance']
      
-    bl = Bleach()
-
     for sanitizer in FieldSanitizer.objects.filter(content_type=sender_content_type):
         if hasattr(sender_instance, sanitizer.field_name):
             field_content = getattr(sender_instance, sanitizer.field_name)
-            field_content = bl.clean(field_content, **sanitizer.get_bleach_clean_args())
+            # Clean with bleach!
+            field_content = clean(field_content, **sanitizer.get_bleach_clean_args())
             setattr(sender_instance, sanitizer.field_name, field_content)
 
 try:
