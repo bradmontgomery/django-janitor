@@ -1,23 +1,25 @@
 """
-This file demonstrates two different styles of tests (one doctest and one
-unittest). These will both pass when you run "manage.py test".
+Basic tests for janitor. 
 
-Replace these with more appropriate tests for your application.
 """
 
-from django.test import TestCase
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.failUnlessEqual(1 + 1, 2)
-
 __test__ = {"doctest": """
-Another way to test that 1 + 1 is equal to 2.
+Just test that FieldSanitizer's methods do what's expected, given 
+default values. We can't really instantiate this, since we don't 
+know what sort of models may exist.
 
->>> 1 + 1 == 2
-True
+>>> from janitor.models import FieldSanitizer
+
+>>> fs = FieldSanitizer()
+
+>>> fs.get_tags_list()
+[u'a', u'abbr', u'acronym', u'blockquote', u'cite', u'code', u'dd', u'del', u'dfn', u'dl', u'dt', u'em', u'h1', u'h2', u'h3', u'h4', u'h5', u'h6', u'hr', u'img', u'ins', u'kbd', u'li', u'ol', u'p', u'pre', u'q', u'samp', u'strong', u'ul']
+
+>>> fs.get_attributes_list()
+[u'alt', u'class', u'href', u'id', u'src', u'title']
+
+>>> fs.get_bleach_clean_args()
+{'styles': [], 'attributes': [u'alt', u'class', u'href', u'id', u'src', u'title'], 'strip': False, 'strip_comments': True, 'tags': [u'a', u'abbr', u'acronym', u'blockquote', u'cite', u'code', u'dd', u'del', u'dfn', u'dl', u'dt', u'em', u'h1', u'h2', u'h3', u'h4', u'h5', u'h6', u'hr', u'img', u'ins', u'kbd', u'li', u'ol', u'p', u'pre', u'q', u'samp', u'strong', u'ul']}
+
 """}
 
