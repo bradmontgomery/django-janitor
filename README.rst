@@ -1,28 +1,37 @@
-django-janitor
-==============
+========
+Overview
+========
 
-Do you have existing django apps whose models store HTML content?  Do you want to
-use bleach_ to clean that HTML, but you don't want to modifying the app? If so,
-django-janitor may be useful for you.
+django-janitor allows you to use bleach_ to clean HTML stored in a Model's field.
+
+Features
+--------
+* You don't need to edit an existing app (django-janitor listens for a Models' pre_save signal)
+* Allowed HTML tags, attributes, and css are specified in a whitelist
+* Whitelists are managed in Django's Admin
+* There are (sensible) default whitelists included
+* Works with Bleach 0.5.0
 
 Installation
 ------------
 
-**This software is a work in progress, and is NOT ready for production usei!** i
-However, if you want to try it out, just put the contents of the janitor directory 
+**This software is a work in progress, and is NOT yet ready for widespread use!**
+
+However, if you want to try it out, just put the contents of the janitor directory
 in a Django project, and add ``janitor`` to ``INSTALLED_APPS``, then run ``manage.py syncdb``
 
 Usage
 -----
 
-Once installed, you would then use Django's Admin to create a ``FieldSanitizer`` for 
-all app Models with fields that contain HTML content.  The ``FieldSanitizer`` consists 
-of a ``ContentType`` and a field name.  Once the ``FieldSanitizer`` is created, 
-django-janitor listens for the pre_save signal for the Model that corresponds to the 
-selected ContentType, and the contents of the supplied field name are cleaned with bleach.
+Browse to the Janitor app in Django's Admin, and create a new Field sanitizer. Then 
+select the Model and specify the fieldname which should be cleaned. After you set up 
+the whitelists for Tags, Attributes, etc, save the Field sanitizer.
+
+Then, when you save the Model to which the Field Sanitizer is associated, the content 
+in the specified field will be cleaned using bleach_.
 
 Here's a Screenshot: |screenshot|
 
 .. _bleach: https://github.com/jsocol/bleach
-.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/ab1b6a62be94/screenshot.png
+.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/44f6deb56713/screenshot.png
 
