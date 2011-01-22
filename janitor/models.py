@@ -4,21 +4,23 @@ from django.db.models.signals import pre_save
 from django.db.utils import DatabaseError
 
 from bleach import Bleach
-
-import html_tags
+from janitor import whitelists
 
 def _register(callback, content_type_list):
     for ct in content_type_list:
         pre_save.connect(callback, sender=ct.model_class(), dispatch_uid=ct.model)
 
-def _default_tags():
-    return ','.join(html_tags.basic_content_tags)
+def _j(some_list):
+    return ', '.join(some_list)
 
 class FieldSanitizer(models.Model):
     content_type = models.ForeignKey(ContentType)
     field_name = models.CharField(max_length=255, help_text="The name of a field in the selected Model. It probably should be a TextField or some sublcass of TextField.")
-    tags = models.TextField(blank=True, default=_default_tags, help_text="A comma-separated list of HTML tags that are allowed in the selected field")
-    attributes = models.TextField(blank=True, default="alt, class, href, id, src", help_text="A comma-separated list of attributes that are allowed in the selected field")
+    tags = models.TextField(blank=True, default=_j(whitelists.basic_content_tags), help_text="A comma-separated whitelist of HTML tags that are allowed in the selected field")
+    attributes = models.TextField(blank=True, default=_j(whitelists.attributes), help_text="A comma-separated whitelist of attributes that are allowed in the selected field")
+    styles = models.TextField(blank=True, help_text="A comma-separated whitelist of allowed CSS properties within a style attribute. NOTE: For this to work, 'style' must be in the list of attributes.")
+    strip = models.BooleanField(default=False, help_text="Strip disallowed HTML instead of escaping it.")
+    strip_comments = models.BooleanField(default=True, help_text="Strip HTML comments.")
 
     def __unicode__(self):
         return u"%s - %s" % (self.content_type, self.field_name)
@@ -46,6 +48,17 @@ class FieldSanitizer(models.Model):
     def get_attributes_list(self):
         return [attr.strip() for attr in self.attributes.split(',') if len(attr.strip()) > 0]
 
+    def get_styles_list(self):
+        return [s.strip() for s in self.styles.split(',') if len(s.strip()) > 0]
+
+    def get_bleach_clean_args(self):
+        """ Return a dict appropriate for passing into ``Bleach.clean`` """
+        return {'tags': self.get_tags_list(),
+                'attributes':self.get_attributes_list(),
+                'styles':self.get_styles_list(),
+                'strip':self.strip,
+                'strip_comments':self.strip_comments }
+
 def sanitize_fields(sender, **kwargs):
     """
     The signal handler for a FieldSanitizer
@@ -59,16 +72,10 @@ def sanitize_fields(sender, **kwargs):
      
     bl = Bleach()
 
-    sanitizers = FieldSanitizer.objects.filter(content_type=sender_content_type)
-    for sanitizer in sanitizers:
+    for sanitizer in FieldSanitizer.objects.filter(content_type=sender_content_type):
         if hasattr(sender_instance, sanitizer.field_name):
             field_content = getattr(sender_instance, sanitizer.field_name)
-            tags = sanitizer.get_tags_list()
-            attributes = sanitizer.get_attributes_list()
-            if attributes:
-                field_content = bl.clean(field_content, tags=tags, attributes=attributes)
-            else:
-                field_content = bl.clean(field_content, tags=tags)
+            field_content = bl.clean(field_content, **sanitizer.get_bleach_clean_args())
             setattr(sender_instance, sanitizer.field_name, field_content)
 
 try:
