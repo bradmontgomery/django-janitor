@@ -14,11 +14,13 @@ Features
 
 Installation
 ------------
+To install the most recent release:
 
-**This software is a work in progress, and is NOT yet ready for widespread use!**
+    pip install django-janitor
 
-However, if you want to try it out, just put the contents of the janitor directory
-in a Django project, and add ``janitor`` to ``INSTALLED_APPS``, then run ``manage.py syncdb``
+To install from the current repository:
+    
+    pip intall hg+https://bitbucket.org/bkmontgomery/django-janitor/
 
 Usage
 -----
