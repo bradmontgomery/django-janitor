@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 from janitor import __version__
 
 setup(
@@ -9,10 +9,12 @@ setup(
     author='Brad Montgomery',
     author_email='brad@bradmontgomery.net',
     url='https://bitbucket.org/bkmontgomery/django-janitor/',
-    download_url='https://bitbucket.org/bkmontgomery/django-janitor/get/f93b678630ef.zip',
     license='BSD',
     packages=['janitor'],
-    requires=['django', 'bleach'],
+    include_package_data=True,
+    package_data = { '': ['README.rst'] },
+    zip_safe=False,
+    install_requires=['django', 'bleach'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
