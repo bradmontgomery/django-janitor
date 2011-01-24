@@ -9,7 +9,7 @@ setup(
     author='Brad Montgomery',
     author_email='brad@bradmontgomery.net',
     url='https://bitbucket.org/bkmontgomery/django-janitor/',
-    download_url='https://bitbucket.org/bkmontgomery/django-janitor/get/8292bc72b25f.zip',
+    download_url='https://bitbucket.org/bkmontgomery/django-janitor/get/f93b678630ef.zip',
     license='BSD',
     packages=['janitor'],
     requires=['django', 'bleach'],
