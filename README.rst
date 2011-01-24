@@ -32,7 +32,9 @@ the whitelists for Tags, Attributes, etc, save the Field sanitizer.
 Then, when you save the Model to which the Field Sanitizer is associated, the content 
 in the specified field will be cleaned using bleach_.
 
-Here's a Screenshot: |screenshot|
+Here's a Screenshot: 
+
+|screenshot|
 
 .. _bleach: https://github.com/jsocol/bleach
 .. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/44f6deb56713/screenshot.png
