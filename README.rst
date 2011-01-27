@@ -14,11 +14,11 @@ Features
 
 Installation
 ------------
-To install the most recent release:
+To install the most recent release::
 
     pip install django-janitor
 
-To install from the current repository:
+To install from the current repository::
     
     pip intall hg+https://bitbucket.org/bkmontgomery/django-janitor/
 
@@ -35,6 +35,22 @@ in the specified field will be cleaned using bleach_.
 Here's a Screenshot: 
 
 |screenshot|
+
+Management Commands
+-------------------
+
+There are two managment commands avaialable to make it easier to clean existing data. The
+first is ``clean_all`` which will look at all of the models that have a related Field Sanitizer, 
+calling the models' ``save`` method to trigger the ``pre_save`` signal (which forces the fields
+to be cleaned)::
+
+    python manage.py clean_all
+
+The second management command is ``clean_model``, which works in a similar fashion, but allows you
+to specify an app and a model::
+
+    python manage.py clean_model myapp.MyModel
+
 
 .. _bleach: https://github.com/jsocol/bleach
 .. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/44f6deb56713/screenshot.png
