@@ -1,7 +1,7 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save
-from django.db.utils import DatabaseError
+from django.db import DatabaseError
 
 from bleach import clean 
 from janitor import whitelists
