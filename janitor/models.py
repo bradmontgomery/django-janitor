@@ -77,6 +77,24 @@ def sanitize_fields(sender, **kwargs):
             field_content = clean(field_content, **sanitizer.get_bleach_clean_args())
             setattr(sender_instance, sanitizer.field_name, field_content)
 
+def _clean_class_objects(klass_list):
+    """
+    Cleans the content for all classes in the provided list.
+    This is done by forcing each instance of the class to
+    invoke it's ``save`` method.
+
+    Returns the total number of objects saved.
+
+    This function is used in the management commands.
+    """
+    object_count = 0
+    for klass in klass_list:
+        for object in klass.objects.all():
+            object.save() 
+            object_count += 1
+    
+    return object_count
+
 try:
     # Register everything 
     _content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
