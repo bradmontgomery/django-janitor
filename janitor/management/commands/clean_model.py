@@ -12,7 +12,16 @@ class Command(LabelCommand):
     label = 'application name.model name'
 
     can_import_settings = False
-    
+   
+    def __init__(self, *args, **kwargs):
+        super(Command, self).__init__(*args, **kwargs)
+       
+        # BaseCommand doesn't have stdout included in Django < 1.2 
+        # So, let's add it in if it's not already there.
+        if not hasattr(self, 'stdout'):
+            from sys import stdout
+            self.stdout = stdout
+
     def handle_label(self, label, **options):
         try:
             app_label, model = label.lower().split('.')
