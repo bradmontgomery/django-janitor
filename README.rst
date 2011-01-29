@@ -39,7 +39,7 @@ Here's a Screenshot:
 Management Commands
 -------------------
 
-There are two managment commands avaialable to make it easier to clean existing data. The
+There are a few managment commands avaialable to make it easier to use django-janitor. The
 first is ``clean_all`` which will look at all of the models that have a related Field Sanitizer, 
 calling the models' ``save`` method to trigger the ``pre_save`` signal (which forces the fields
 to be cleaned)::
@@ -51,6 +51,18 @@ to specify an app and a model::
 
     python manage.py clean_model myapp.MyModel
 
+Finally, ``list_html_elements`` and ``list_html_elements_for_model`` exist to help you discover what 
+HTML elements are being used in existing content.  While these commands do require that a ``FieldSanitizer``
+be configured for existing Models, they may be used to help you decide which tags to include in a whitelist.
+
+You should run these commands before using ``clean_all`` or ``clean_model`` to see what sort of data 
+exists before it's cleaned::
+
+    python manage.py list_html_elements
+
+Or::
+    
+    python manage.py list_html_elements_for_model myapp.MyModel
 
 .. _bleach: https://github.com/jsocol/bleach
 .. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/44f6deb56713/screenshot.png
