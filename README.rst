@@ -65,5 +65,5 @@ Or::
     python manage.py list_html_elements_for_model myapp.MyModel
 
 .. _bleach: https://github.com/jsocol/bleach
-.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/44f6deb56713/screenshot.png
+.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/c64fa105170d/screenshot.png
 
