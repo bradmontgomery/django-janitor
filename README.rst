@@ -10,7 +10,7 @@ Features
 * Allowed HTML tags, attributes, and css are specified in a whitelist
 * Whitelists are managed in Django's Admin
 * There are (sensible) default whitelists included
-* Works with Bleach 0.5.0
+* Works with Bleach 1.0.4
 
 Installation
 ------------
