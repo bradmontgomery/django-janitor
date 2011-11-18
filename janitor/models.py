@@ -30,6 +30,16 @@ class FieldSanitizer(models.Model):
         ordering = ['content_type', 'field_name', ]
         unique_together = (('content_type', 'field_name'), )
 
+    @property
+    def app_name(self):
+        """ return the name of the App to which this sanitizer is associated """
+        return self.content_type.app_label
+    
+    @property
+    def model_name(self):
+        """ return the name of the Model to which this sanitizer is associated """
+        return self.content_type.model
+
     def save(self, *args, **kwargs):
         """
         Checks to see that ``field_name`` is an attribute of the selected Model,
