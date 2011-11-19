@@ -11,6 +11,6 @@ class ContentTypeChoiceFieldWithAppLabel(ModelChoiceField):
         return "%s/%s" % (obj.app_label, obj.name)
 
 class FieldSanitizerAdminForm(ModelForm):
-    content_type = ContentTypeChoiceFieldWithAppLabel(ContentType.objects.all())
+    content_type = ContentTypeChoiceFieldWithAppLabel(ContentType.objects.all().order_by('app_label', 'model'))
     class Meta:
         model = FieldSanitizer
