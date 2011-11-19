@@ -10,7 +10,7 @@ Features
 * Allowed HTML tags, attributes, and css are specified in a whitelist
 * Whitelists are managed in Django's Admin
 * There are (sensible) default whitelists included
-* Works with Bleach 1.0.4
+* Works with Bleach 1.1.0
 
 Installation
 ------------
@@ -45,6 +45,8 @@ calling the models' ``save`` method to trigger the ``pre_save`` signal (which fo
 to be cleaned)::
 
     python manage.py clean_all
+
+This is useful if you've created a ``FieldSanitizer`` for a model with existing content. 
 
 The second management command is ``clean_model``, which works in a similar fashion, but allows you
 to specify an app and a model::

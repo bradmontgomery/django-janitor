@@ -1,2 +1,2 @@
-bleach==1.0.4
+bleach==1.1.0
 django>=1.1.4
