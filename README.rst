@@ -10,7 +10,11 @@ Features
 * Allowed HTML tags, attributes, and css are specified in a whitelist
 * Whitelists are managed in Django's Admin
 * There are (sensible) default whitelists included
-* Works with Bleach 1.1.0
+
+Requirements
+------------
+* Requires Bleach >= 1.1.0
+* Requires Django >= 1.3.1
 
 Installation
 ------------
@@ -21,6 +25,8 @@ To install the most recent release::
 To install from the current repository::
     
     pip intall hg+https://bitbucket.org/bkmontgomery/django-janitor/
+
+Then, add ``janitor`` to your installed apps, and run ``syncdb``.
 
 Usage
 -----
