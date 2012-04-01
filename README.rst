@@ -42,6 +42,21 @@ Here's a Screenshot:
 
 |screenshot|
 
+Tests
+-----
+
+There are a few tests in ``janitor/tests``. You can run these with::
+    
+    python manage.py tests janitor
+
+These tests dynamically add a sample app/model to ``INSTALLED_APPS``, then 
+calling ``syncdb``. Unfortunately, this fails for some versions of pyscopg2 
+in Django 1.3 with::
+
+    psycopg2.ProgrammingError: autocommit cannot be used inside a transaction
+
+This should work correctly in Django 1.4, though.
+
 Management Commands
 -------------------
 
