@@ -4,11 +4,9 @@ from django.db.models.signals import pre_save
 from django.db import DatabaseError
 from django.db import transaction
 
-
 from bleach import clean 
 from html5lib import html5parser
 from janitor import whitelists
-import sys, traceback
 
 def _register(callback, content_type_list):
     for ct in content_type_list:
