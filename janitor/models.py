@@ -2,10 +2,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.db.models.signals import pre_save
 from django.db import DatabaseError
+from django.db import transaction
+
 
 from bleach import clean 
 from html5lib import html5parser
 from janitor import whitelists
+import sys, traceback
 
 def _register(callback, content_type_list):
     for ct in content_type_list:
@@ -134,10 +137,25 @@ def _get_tags_used_in_content(app_label=None, model=None):
     tag_list.sort()
     return tag_list
 
-try:
-    # Register everything 
-    _content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
-    _content_types = [ct for ct in ContentType.objects.filter(id__in=_content_type_ids)]
-    _register(sanitize_fields, _content_types)
-except DatabaseError:
-    pass # FieldSanittizer's tables don't exist yet.
+@transaction.commit_manually
+def register_everything():
+    """
+    This function attempts to register all ``FieldSanitizer`` instances
+    with the ``sanitize_fields`` callback. 
+
+    When you initially install this app and run ``syncdb``, the model 
+    doesn't exist in the database. This raises a ``DatabaseError`` exception,
+    and in some DBMSs (PostgreSQL) ``syncdb`` will refuse to continute if a
+    transaction did not get commited successfully. Hence the reason for all 
+    transaction managment stuff.
+    """
+    transaction.commit()
+    try:
+        _content_type_ids = FieldSanitizer.objects.values_list('content_type').distinct()
+        _content_types = [ct for ct in ContentType.objects.filter(id__in=_content_type_ids)]
+        _register(sanitize_fields, _content_types)
+    except DatabaseError:
+        transaction.rollback()
+    else:
+        transaction.commit()
+register_everything() # try to register the signal callbacks when this file is loaded
