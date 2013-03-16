@@ -1,9 +1,10 @@
 """
-Management utility to clean a specific Model that is registered with a FieldSanitizer.
+Management utility to clean a specific Model that is registered with a
+FieldSanitizer.
 """
-from optparse import make_option
 from django.core.management.base import CommandError, LabelCommand
 from janitor.models import FieldSanitizer, _clean_class_objects
+
 
 class Command(LabelCommand):
 
@@ -12,11 +13,11 @@ class Command(LabelCommand):
     label = 'application name.model name'
 
     can_import_settings = False
-   
+
     def __init__(self, *args, **kwargs):
         super(Command, self).__init__(*args, **kwargs)
-       
-        # BaseCommand doesn't have stdout included in Django < 1.2 
+
+        # BaseCommand doesn't have stdout included in Django < 1.2
         # So, let's add it in if it's not already there.
         if not hasattr(self, 'stdout'):
             from sys import stdout
@@ -26,17 +27,24 @@ class Command(LabelCommand):
         try:
             app_label, model = label.lower().split('.')
         except ValueError:
-            raise CommandError("Invalid app_label.model_name: %s" % label)
+            raise CommandError(
+                "Invalid app_label.model_name: {0}".format(label)
+            )
 
-        self.stdout.write("\nCleaning %s.%s\n" % (app_label, model))
+        self.stdout.write("\nCleaning {0}.{1}\n".format(app_label, model))
 
-        qs = FieldSanitizer.objects.filter(content_type__app_label=app_label, content_type__model=model)
+        qs = FieldSanitizer.objects.filter(
+            content_type__app_label=app_label,
+            content_type__model=model
+        )
         try:
             assert qs.count() > 0
         except AssertionError:
-            raise CommandError("It looks like there are no FieldSanitizers defined for %s.%s" % (app_label, model)) 
+            raise CommandError("It looks like there are no FieldSanitizers "
+                "defined for {0}.{1}".format(app_label, model)
+            )
 
         klass_list = [fs.content_type.model_class() for fs in qs]
         object_count = _clean_class_objects(klass_list)
 
-        self.stdout.write("Cleaned %s Objects\n" % object_count)
+        self.stdout.write("Cleaned {0} Objects\n".format(object_count))
