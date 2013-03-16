@@ -28,7 +28,10 @@ To install from the current repository::
 
     pip intall hg+https://bitbucket.org/bkmontgomery/django-janitor/
 
-Then, add ``janitor`` to your installed apps, and run ``syncdb``.
+Then, add ``janitor`` to your installed apps, and run ``syncdb``. Alternatively,
+you can run the migrations if you use south_::
+
+    python manage.py migrate janitor
 
 Usage
 -----
@@ -95,4 +98,4 @@ Or::
 
 .. _bleach: https://github.com/jsocol/bleach
 .. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/d8e9dae3273e/screenshot.png
-
+.. _south: http://south.aeracode.org
