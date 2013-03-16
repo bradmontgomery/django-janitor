@@ -83,7 +83,7 @@ class FieldSanitizer(models.Model):
     def _split(self, text, delimiter=","):
         """Split text by delimiter and and filter out empty values."""
         items = [i.strip() for i in text.split(delimiter)]
-        items.filter(lambda i: len(i) > 0, items)  # remove blanks
+        items = filter(lambda i: len(i) > 0, items)  # remove blanks
         return items
 
     def get_tags_list(self):
