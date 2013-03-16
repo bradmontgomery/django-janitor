@@ -1,9 +1,8 @@
-"""
-Test models.
-"""
+"""Test models."""
 from django.db import models
 
-class TestModel(models.Model):
+
+class JanitorTestModel(models.Model):
     content = models.TextField()
 
     def __unicode__(self):
@@ -11,6 +10,5 @@ class TestModel(models.Model):
 
     class Meta:
         ordering = ['content']
-        verbose_name = 'Test Model'
-        verbose_name_plural = 'Test Models'
-
+        verbose_name = 'Janitor Test Model'
+        verbose_name_plural = 'Janitor Test Models'
