@@ -1,2 +1,2 @@
-bleach>=1.2.1
-django>=1.4.5
+bleach>=1.4
+Django>=1.6.5
