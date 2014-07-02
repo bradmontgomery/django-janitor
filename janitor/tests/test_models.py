@@ -6,7 +6,7 @@ from django.db.models import loading
 from django.test import TransactionTestCase
 
 from janitor import whitelists
-from janitor.models import FieldSanitizer
+from janitor.models import FieldSanitizer, _clean_class_objects
 from janitor.tests.models import JanitorTestModel
 
 
@@ -92,3 +92,11 @@ class TestJanitor(TransactionTestCase):
             ]
         }
         self.assertEqual(fs.get_bleach_clean_args(), expected_args)
+
+    def test__clean_class_objects(self):
+        """Runs the models._clean_class_objects function."""
+        # This function returns the number of ojects saved/cleaned
+        obj = JanitorTestModel(content="<p><x>Foo</x></p>")
+        obj.save()
+
+        self.assertEqual(_clean_class_objects([JanitorTestModel]), 1)
