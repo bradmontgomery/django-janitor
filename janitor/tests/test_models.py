@@ -119,4 +119,4 @@ class TestJanitor(TransactionTestCase):
         fs.save()
 
         tags = sorted(_get_tags_used_in_content())
-        self.assertEqual(tags, ['body', 'em', 'head', 'html', 'p', 'strong'])
+        self.assertEqual(tags, ['em', 'p', 'strong'])
