@@ -6,7 +6,8 @@ from django.db.models import loading
 from django.test import TransactionTestCase
 
 from janitor import whitelists
-from janitor.models import FieldSanitizer, _clean_class_objects
+from janitor.models import FieldSanitizer
+from janitor.models import _clean_class_objects, _get_tags_used_in_content
 from janitor.tests.models import JanitorTestModel
 
 
@@ -69,8 +70,12 @@ class TestJanitor(TransactionTestCase):
         """Adds an HTML comment to the class's sample content, then verifies
         that it gets removed.
         """
-        fs = FieldSanitizer(content_type=self.ct, field_name="content",
-            strip=True, strip_comments=True)
+        fs = FieldSanitizer(
+            content_type=self.ct,
+            field_name="content",
+            strip=True,
+            strip_comments=True
+        )
         fs.save()
         obj = self.test_model(content="<!-- Hello! -->" + self.sample_content)
         obj.save()
@@ -105,3 +110,13 @@ class TestJanitor(TransactionTestCase):
         obj.save()
 
         self.assertEqual(_clean_class_objects([JanitorTestModel]), 1)
+
+    def test__get_tags_used_in_content(self):
+        JanitorTestModel.objects.create(
+            content="<p><strong>Hi</strong><em>World</em></p>"
+        )
+        fs = FieldSanitizer(content_type=self.ct, field_name="content")
+        fs.save()
+
+        tags = sorted(_get_tags_used_in_content())
+        self.assertEqual(tags, ['body', 'em', 'head', 'html', 'p', 'strong'])
