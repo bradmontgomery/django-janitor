@@ -26,7 +26,7 @@ To install the most recent release::
 
 To install from the current repository::
 
-    pip intall hg+https://bitbucket.org/bkmontgomery/django-janitor/
+    pip install git+https://github.com/bradmontgomery/django-janitor
 
 Then, add ``janitor`` to your installed apps, and run ``syncdb``. Alternatively,
 you can run the migrations if you use south_::
@@ -97,5 +97,5 @@ Or::
     python manage.py list_html_elements_for_model myapp.MyModel
 
 .. _bleach: https://github.com/jsocol/bleach
-.. |screenshot| image:: https://bitbucket.org/bkmontgomery/django-janitor/raw/d8e9dae3273e/screenshot.png
+.. |screenshot| image:: https://raw.githubusercontent.com/bradmontgomery/django-janitor/master/screenshot.png
 .. _south: http://south.aeracode.org
