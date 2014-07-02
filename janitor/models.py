@@ -1,3 +1,5 @@
+from HTMLParser import HTMLParser
+
 from django.contrib.contenttypes.models import ContentType
 from django.db import DatabaseError
 from django.db import models
@@ -5,7 +7,6 @@ from django.db import transaction
 from django.db.models.signals import pre_save
 
 from bleach import clean
-from html5lib import html5parser
 from janitor import whitelists
 
 
@@ -148,6 +149,18 @@ def _clean_class_objects(klass_list):
     return object_count
 
 
+class HTMLTagParser(HTMLParser):
+    """A Simple parser that stores a set of tags in a document."""
+
+    def add_tag(self, tag):
+        if not hasattr(self, "tags"):
+            self.tags = set()
+        self.tags.add(tag)
+
+    def handle_starttag(self, tag, attrs):
+        self.add_tag(tag)
+
+
 def _get_tags_used_in_content(app_label=None, model=None):
     """
     Use html5lib's parser to get a list of HTML tags used in content
@@ -158,27 +171,20 @@ def _get_tags_used_in_content(app_label=None, model=None):
     ``list_html_elements_for_model`` management commands.
 
     """
+    tag_parser = HTMLTagParser()
     queryset = FieldSanitizer.objects.all()
     if app_label and model:
-        queryset = queryset.filter(content_type__app_label=app_label,
-            content_type__model=model)
-
-    tag_list = []
+        queryset = queryset.filter(
+            content_type__app_label=app_label,
+            content_type__model=model
+        )
 
     for fs in queryset:
         model_class = fs.content_type.model_class()
-        content_list = model_class.objects.values_list(
-            fs.field_name,
-            flat=True
-        )
+        for content in model_class.objects.values_list(fs.field_name, flat=True):
+            tag_parser.feed(content)
 
-        for content in content_list:
-            doc = html5parser.parse(content)
-            tag_list.extend([str(tag.name) for tag in doc if tag.name])
-
-    tag_list = list(set(tag_list))  # remove duplicates
-    tag_list.sort()
-    return tag_list
+    return sorted(list(tag_parser.tags))
 
 
 @transaction.commit_manually
