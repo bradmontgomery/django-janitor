@@ -48,6 +48,11 @@ class TestJanitor(TransactionTestCase):
             settings.INSTALLED_APPS = list(settings.INSTALLED_APPS)
             settings.INSTALLED_APPS.remove('janitor.tests')
 
+    def test__unicode__(self):
+        """Tests the FieldSanitizer.__unicode__ method."""
+        fs = FieldSanitizer(content_type=self.ct, field_name="content")
+        self.assertEqual(fs.__unicode__(), "Janitor Test Model - content")
+
     def test_default_clean(self):
         """Creates an instance of the test model with some sample content,
         then verifies that it gets cleaned upon saving.
