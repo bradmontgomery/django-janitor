@@ -19,3 +19,12 @@ class FieldSanitizerAdminForm(ModelForm):
 
     class Meta:
         model = FieldSanitizer
+        fields = [
+            'content_type',
+            'field_name',
+            'tags',
+            'attributes',
+            'styles',
+            'strip',
+            'strip_comments',
+        ]

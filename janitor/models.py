@@ -1,9 +1,7 @@
-from HTMLParser import HTMLParser
+from html.parser import HTMLParser
 
 from django.contrib.contenttypes.models import ContentType
-from django.db import DatabaseError
-from django.db import models
-from django.db import transaction
+from django.db import models, transaction, IntegrityError
 from django.db.models.signals import pre_save
 
 from bleach import clean
@@ -11,8 +9,8 @@ from janitor import whitelists
 
 
 def _register(callback, content_type_list):
-    """Connects the ``callback`` function to each content type in the
-    ``content_type_list`` with the ``pre_save``."""
+    """Connects the `callback` function to each content type in the
+    `content_type_list` with the `pre_save` signal handler."""
     for ct in content_type_list:
         pre_save.connect(
             callback,
@@ -28,28 +26,40 @@ def _j(some_list):
 
 class FieldSanitizer(models.Model):
     content_type = models.ForeignKey(ContentType)
-    field_name = models.CharField(max_length=255,
+    field_name = models.CharField(
+        max_length=255,
         help_text="The name of a field in the selected Model. It probably "
-                  "should be a TextField or some sublcass of TextField.")
-    tags = models.TextField(blank=True,
+                  "should be a TextField or some sublcass of TextField."
+    )
+    tags = models.TextField(
+        blank=True,
         default=_j(whitelists.basic_content_tags),
         help_text="A comma-separated whitelist of HTML tags that are allowed "
-                  "in the selected field")
-    attributes = models.TextField(blank=True,
+                  "in the selected field"
+    )
+    attributes = models.TextField(
+        blank=True,
         default=_j(whitelists.attributes),
         help_text="A comma-separated whitelist of attributes that are "
-                  "allowed in the selected field")
-    styles = models.TextField(blank=True,
+                  "allowed in the selected field"
+    )
+    styles = models.TextField(
+        blank=True,
         help_text="A comma-separated whitelist of allowed CSS properties "
                   "within a style attribute. NOTE: For this to work, 'style' "
-                  "must be in the list of attributes.")
-    strip = models.BooleanField(default=False,
-        help_text="Strip disallowed HTML instead of escaping it.")
-    strip_comments = models.BooleanField(default=True,
-        help_text="Strip HTML comments.")
+                  "must be in the list of attributes."
+    )
+    strip = models.BooleanField(
+        default=False,
+        help_text="Strip disallowed HTML instead of escaping it."
+    )
+    strip_comments = models.BooleanField(
+        default=True,
+        help_text="Strip HTML comments."
+    )
 
-    def __unicode__(self):
-        return u"%s - %s" % (self.content_type, self.field_name)
+    def __str__(self):
+        return "%s - %s" % (self.content_type, self.field_name)
 
     class Meta:
         ordering = ['content_type', 'field_name', ]
@@ -69,12 +79,12 @@ class FieldSanitizer(models.Model):
         """Checks to see that ``field_name`` is an attribute of the selected
         Model, then registers the signal handler with the appropriate model.
         """
-        msg = u"The field_name '{0}' does not exist in the model '{1}'".format(
+        msg = "The field_name '{0}' does not exist in the model '{1}'".format(
             self.field_name,
             self.content_type.model
         )
         assert self._field_name_in_model(), msg
-        super(FieldSanitizer, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
         _register(sanitize_fields, [self.content_type])
 
     def _field_name_in_model(self):
@@ -84,8 +94,7 @@ class FieldSanitizer(models.Model):
     def _split(self, text, delimiter=","):
         """Split text by delimiter and and filter out empty values."""
         items = [i.strip() for i in text.split(delimiter)]
-        items = filter(lambda i: len(i) > 0, items)  # remove blanks
-        return items
+        return list(filter(None, items))  # remove blanks
 
     def get_tags_list(self):
         return self._split(self.tags)
@@ -110,15 +119,14 @@ class FieldSanitizer(models.Model):
 def sanitize_fields(sender, **kwargs):
     """The signal handler for a FieldSanitizer
 
-    * ``sender`` - the model class
-    * ``instance`` - an instance of the sender
+    * `sender` - the model class
+    * `instance` - an instance of the sender
 
     """
     sender_content_type = ContentType.objects.get_for_model(sender)
     sender_instance = kwargs['instance']
 
-    sanitizers = FieldSanitizer.objects.filter(
-        content_type=sender_content_type)
+    sanitizers = FieldSanitizer.objects.filter(content_type=sender_content_type)
     for sanitizer in sanitizers:
         if hasattr(sender_instance, sanitizer.field_name):
             field_content = getattr(
@@ -126,15 +134,17 @@ def sanitize_fields(sender, **kwargs):
                 sanitizer.field_name
             )
             # Clean with bleach!
-            field_content = clean(field_content,
-                **sanitizer.get_bleach_clean_args())
+            field_content = clean(
+                field_content,
+                **sanitizer.get_bleach_clean_args()
+            )
             setattr(sender_instance, sanitizer.field_name, field_content)
 
 
 def _clean_class_objects(klass_list):
     """Cleans the content for all classes in the provided list.
     This is done by forcing each instance of the class to
-    invoke it's ``save`` method.
+    invoke it's `save` method.
 
     Returns the total number of objects saved.
 
@@ -145,7 +155,6 @@ def _clean_class_objects(klass_list):
         for object in klass.objects.all():
             object.save()
             object_count += 1
-
     return object_count
 
 
@@ -167,8 +176,8 @@ def _get_tags_used_in_content(app_label=None, model=None):
     associated with a FieldSanitizer.
 
     This can be useful when determining what to include in a whitelist,
-    and is used in the ``list_html_elements`` and
-    ``list_html_elements_for_model`` management commands.
+    and is used in the `list_html_elements` and
+    `list_html_elements_for_model` management commands.
 
     """
     tag_parser = HTMLTagParser()
@@ -187,28 +196,22 @@ def _get_tags_used_in_content(app_label=None, model=None):
     return sorted(list(tag_parser.tags))
 
 
-@transaction.commit_manually
+@transaction.atomic
 def register_everything():
     """
-    This function attempts to register all ``FieldSanitizer`` instances
-    with the ``sanitize_fields`` callback.
+    This function attempts to register all `FieldSanitizer` instances
+    with the `sanitize_fields` callback.
 
-    When you initially install this app and run ``syncdb``, the model
-    doesn't exist in the database. This raises a ``DatabaseError`` exception,
-    and in some DBMSs (PostgreSQL) ``syncdb`` will refuse to continute if a
-    transaction did not get commited successfully. Hence the reason for all
-    transaction managment stuff.
+    See: janitor.apps.JanitorConfig.ready()
+
     """
-    transaction.commit()
     try:
-        _content_type_ids = FieldSanitizer.objects.values_list('content_type')
-        _content_type_ids = _content_type_ids.distinct()
-        _content_types = [
-            ct for ct in ContentType.objects.filter(id__in=_content_type_ids)
-        ]
-        _register(sanitize_fields, _content_types)
-    except DatabaseError:
+        with transaction.atomic():
+            _content_type_ids = FieldSanitizer.objects.values_list('content_type')
+            _content_type_ids = _content_type_ids.distinct()
+            _content_types = [
+                ct for ct in ContentType.objects.filter(id__in=_content_type_ids)
+            ]
+            _register(sanitize_fields, _content_types)
+    except IntegrityError:
         transaction.rollback()
-    else:
-        transaction.commit()
-register_everything()  # register the signal callbacks

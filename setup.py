@@ -10,7 +10,7 @@ setup(
     name='django-janitor',
     version=__version__,
     description=short_desc,
-    long_description=open('README.rst').read(),
+    long_description=open('README.md').read(),
     author='Brad Montgomery',
     author_email='brad@bradmontgomery.net',
     url='https://github.com/bradmontgomery/django-janitor',
