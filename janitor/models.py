@@ -202,11 +202,8 @@ def register_everything():
     This function attempts to register all `FieldSanitizer` instances
     with the `sanitize_fields` callback.
 
-    When you initially install this app and run `syncdb`, the model
-    doesn't exist in the database. This raises a ``DatabaseError`` exception,
-    and in some DBMSs (PostgreSQL) ``syncdb`` will refuse to continute if a
-    transaction did not get commited successfully. Hence the reason for all
-    transaction managment stuff.
+    See: janitor.apps.JanitorConfig.ready()
+
     """
     try:
         with transaction.atomic():
