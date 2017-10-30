@@ -4,13 +4,13 @@ Overview
 django-janitor allows you to use [bleach](https://bleach.readthedocs.io/)
 to clean HTML stored in arbitrary Models.
 
-This is useful when you've got content stored in a 3rd-party app, but
+This is useful when you've got HTML content stored in a 3rd-party app, but
 you'd like to use a whitelist for allowed HTML tags.
 
 ## Features
 
-* You don't need to edit an existing app (django-janitor listens for a Models'
-  `pre_save` signal)
+* django-janitor listens for a Models' `pre_save` signal, and runs it's content
+  through bleach.
 * Allowed HTML tags, attributes, and css are specified in a whitelist
 * Whitelists are managed in Django's Admin
 * There are (sensible) default whitelists included
@@ -20,13 +20,18 @@ you'd like to use a whitelist for allowed HTML tags.
 * Requires Bleach
 * Works with Django 1.11
 
+**NOTE on upgrading to version 0.5.0**: This version officially supports
+Python 3 and  Django 1.11. Prior versions of this app included south migrations
+and only supported something like Django 1.4. If you're previously used this,
+you'll have to figure out how to upgrade your existing models (sorry).
+
 ## Installation
 
 To install the most recent release:
 
     pip install django-janitor
 
-To install from the current repository:
+Or to install from the current repository:
 
     pip install git+https://github.com/bradmontgomery/django-janitor
 
