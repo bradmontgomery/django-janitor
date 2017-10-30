@@ -17,7 +17,7 @@ setup(
     license='MIT',
     packages=['janitor'],
     include_package_data=True,
-    package_data={'': ['README.rst']},
+    package_data={'': ['README.md']},
     zip_safe=False,
     install_requires=['django', 'bleach'],
     classifiers=[
@@ -28,6 +28,7 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 3',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Text Processing :: Markup :: HTML',
