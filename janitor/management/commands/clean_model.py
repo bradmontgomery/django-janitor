@@ -1,27 +1,16 @@
 """
 Management utility to clean a specific Model that is registered with a
 FieldSanitizer.
+
 """
 from django.core.management.base import CommandError, LabelCommand
 from janitor.models import FieldSanitizer, _clean_class_objects
 
 
 class Command(LabelCommand):
-
     help = "Cleans fields for a specified Model"
     args = "[appname.modelname]"
     label = 'application name.model name'
-
-    can_import_settings = False
-
-    def __init__(self, *args, **kwargs):
-        super(Command, self).__init__(*args, **kwargs)
-
-        # BaseCommand doesn't have stdout included in Django < 1.2
-        # So, let's add it in if it's not already there.
-        if not hasattr(self, 'stdout'):
-            from sys import stdout
-            self.stdout = stdout
 
     def handle_label(self, label, **options):
         try:
@@ -40,11 +29,9 @@ class Command(LabelCommand):
         try:
             assert qs.count() > 0
         except AssertionError:
-            raise CommandError("It looks like there are no FieldSanitizers "
-                "defined for {0}.{1}".format(app_label, model)
-            )
+            msg = "There are no FieldSanitizers defined for {0}.{1}"
+            raise CommandError(msg.format(app_label, model))
 
         klass_list = [fs.content_type.model_class() for fs in qs]
         object_count = _clean_class_objects(klass_list)
-
         self.stdout.write("Cleaned {0} Objects\n".format(object_count))

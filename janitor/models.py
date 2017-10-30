@@ -152,8 +152,8 @@ def _clean_class_objects(klass_list):
     """
     object_count = 0
     for klass in klass_list:
-        for object in klass.objects.all():
-            object.save()
+        for obj in klass.objects.all():
+            obj.save()
             object_count += 1
     return object_count
 
