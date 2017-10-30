@@ -50,11 +50,43 @@ class TestJanitor(TestCase):
         """Tests the FieldSanitizer.__str__ method."""
         self.assertEqual(self.fs.__str__(), "field sanitizer - styles")
 
+    def test_app_name(self):
+        self.assertEqual(self.fs.app_name, "janitor")
+
+    def test_model_name(self):
+        self.assertEqual(self.fs.model_name, "fieldsanitizer")
+
+    def test__field_name_in_model(self):
+        self.assertTrue(self.fs._field_name_in_model())
+
+    def test__split(self):
+        self.assertEqual(self.fs._split("a,b,c,"), ['a', 'b', 'c'])
+
+    def test_get_tags_list(self):
+        self.assertEqual(self.fs.get_tags_list(), ['h1', 'p', 'a'])
+
+    def test_get_attributes_list(self):
+        self.assertEqual(self.fs.get_attributes_list(), ['href'])
+
+    def test_get_styles_list(self):
+        self.assertEqual(self.fs.get_styles_list(), [])
+
     def test_default_clean(self):
         """Creates an instance of the test model with some sample content,
         then verifies that it gets cleaned upon saving.
         """
         self.assertEqual(self.obj.styles, self.cleaned_content)
+
+    def test_get_bleach_clean_args(self):
+        actual = self.fs.get_bleach_clean_args()
+        expected = {
+            'tags': ['h1', 'p', 'a'],
+            'attributes': ['href'],
+            'styles': [],
+            'strip': True,
+            'strip_comments': True,
+        }
+        self.assertDictEqual(actual, expected)
 
     def test_strip_content(self):
         """Adds an HTML comment to the class's sample content, then verifies
